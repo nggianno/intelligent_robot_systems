@@ -280,6 +280,23 @@ class Navigation:
         if self.subtargets and self.next_subtarget <= len(self.subtargets) - 1:
             st_x = self.subtargets[self.next_subtarget][0]
             st_y = self.subtargets[self.next_subtarget][1]
+
+            theta_r = np.arctan2(st_y - ry, st_x - rx)
+
+            d_theta = theta_r - theta
+            if ((d_theta >= 0) & (d_theta <= np.pi)):
+                omega = d_theta / np.pi
+            elif ((d_theta > 0) & (d_theta >= np.pi)):
+                omega = (d_theta - 2 * np.pi) / np.pi
+            elif ((d_theta <= 0) & (d_theta >= - np.pi)):
+                omega = d_theta / np.pi
+            elif ((d_theta < 0) & (d_theta < - np.pi)):
+                omega = (d_theta + 2 * np.pi) / np.pi
+
+            angular = omega * 0.3  # max angular = 0.3 m/s
+
+            linear_r = 1 - np.abs(omega)  # may need square
+            linear = linear_r * 0.3  # max linear = 0.3 m/s
             
         ######################### NOTE: QUESTION  ##############################
 
