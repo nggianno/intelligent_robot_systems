@@ -12,6 +12,8 @@ from sonar_data_aggregator import SonarDataAggregator
 from laser_data_aggregator import LaserDataAggregator
 from navigation import Navigation
 
+import numpy as np
+
 # Class for assigning the robot speeds 
 class RobotController:
 
@@ -66,13 +68,24 @@ class RobotController:
 
     # Produces speeds from the laser
     def produceSpeedsLaser(self):
-      scan = self.laser_aggregation.laser_scan
-      linear  = 0
+      # save scan as a numpy.array and get the angles
+      scan = np.array(self.laser_aggregation.laser_scan)
+      angle_min = self.laser_aggregation.angle_min
+      angle_max = self.laser_aggregation.angle_max
+      # lidar's angles in an array, len(scan) == 667
+      # calculate all angles of lidar
+      angles = np.linspace(angle_min, angle_max, len(scan))
+
+      linear = 0
       angular = 0
       ############################### NOTE QUESTION ############################
       # Check what laser_scan contains and create linear and angular speeds
       # for obstacle avoidance
-
+      linear = -sum(np.cos(angles) / (scan ** 2)) / len(scan)
+      angular = -sum(np.sin(angles) / (scan ** 2)) / len(scan)
+      # angular range = [-0.3, 0.3] and linear range = [-0.15, 0.15]
+      linear = min(0.15, max(-0.15, linear))
+      angular = min(0.3, max(-0.3, angular))
       ##########################################################################
       return [linear, angular]
 
@@ -114,7 +127,8 @@ class RobotController:
         ############################### NOTE QUESTION ############################
         # Implement obstacle avoidance here using the laser speeds.
         # Hint: Subtract them from something constant
-        pass
+        self.linear_velocity = 0.15 + l_laser
+        self.angular_velocity = a_laser
         ##########################################################################
 
     # Assistive functions

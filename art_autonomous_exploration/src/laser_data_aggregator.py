@@ -11,6 +11,8 @@ class LaserDataAggregator:
 
         # Initialization of laser scan 
         self.laser_scan = []
+        self.angle_min = 0
+        self.angle_max = 0
 
         # ROS Subscribers to the robot's laser
         laser_topic = rospy.get_param("laser_topic")
